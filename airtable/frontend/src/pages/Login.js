@@ -28,7 +28,7 @@ const Login = ({ onLogin }) => {
   return (
     <div className="login-container">
       <div className="login-card">
-        <div className="login-logo">A</div>
+        <h1 className="login-logo">AIRTABLE</h1>
         <h1 className="login-title">Welcome Back</h1>
         <p className="login-subtitle">Sign in to your workspace</p>
 

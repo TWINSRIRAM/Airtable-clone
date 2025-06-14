@@ -32,9 +32,6 @@ const Dashboard = () => {
       >
         <div style={{ fontSize: 50, marginBottom: 20 }}>🚧</div>
         <h1 style={{ margin: 0, fontWeight: "normal" }}>Under Maintenance</h1>
-        <p style={{ marginTop: 10, fontSize: 16 }}>
-          This site is currently under maintenance. Please check back soon!
-        </p>
       </main>
     </div>
   );
