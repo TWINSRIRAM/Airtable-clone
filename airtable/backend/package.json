@@ -1,0 +1,25 @@
+{
+  "name": "airtable-clone-backend",
+  "version": "1.0.0",
+  "description": "Backend for Airtable Clone",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "cors": "^2.8.5",
+    "jsonwebtoken": "^9.0.2",
+    "bcrypt": "^5.1.1",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": ["airtable", "clone", "express", "mysql", "jwt"],
+  "author": "Your Name",
+  "license": "MIT"
+}
