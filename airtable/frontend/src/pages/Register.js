@@ -1,77 +1,103 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import axios from "axios";
-import "./Register.css";
+import { useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import axios from "axios"
+import "./Register.css"
 
 const Register = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+  const [form, setForm] = useState({ name: "", email: "", password: "" })
+  const [error, setError] = useState("")
+  const [load, setLoad] = useState(false)
+  const go = useNavigate()
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  const change = (e) => setForm({ ...form, [e.target.name]: e.target.value })
+
+  const submit = async (e) => {
+    e.preventDefault()
+    setLoad(true)
+    setError("")
+
     try {
-      await axios.post("http://localhost:5000/register", {
-        name,
-        email,
-        password,
-      });
-      alert("Registration successful! Please log in.");
-      navigate("/");
-    } catch (error) {
-      alert("Registration failed. Please try again.");
+      const res = await axios.post("/api/register", form)
+      if (res.data.token) {
+        localStorage.setItem("token", res.data.token)
+        go("/dashboard")
+      } else {
+        setError("Unexpected error. Try again.")
+      }
+    } catch (err) {
+      if (err.response?.status === 409) {
+        setError("Email already exists")
+      } else if (err.response?.data?.error) {
+        setError(err.response.data.error)
+      } else {
+        setError("Registration failed")
+      }
     }
-    setLoading(false);
-  };
+
+    setLoad(false)
+  }
 
   return (
     <div className="register-container">
       <div className="register-card">
-        <div className="register-logo">A</div>
-        <h1 className="register-title">Create Account</h1>
-        <p className="register-subtitle">Start building amazing databases</p>
+        <div className="register-header">
+          <h1>Create Account</h1>
+          <p>Join Airtable Clone today</p>
+        </div>
 
-        <form onSubmit={handleSubmit} className="register-form">
-          <input
-            type="text"
-            placeholder="Full Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            required
-          />
+        {error && <div className="error-message">{error}</div>}
 
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+        <form onSubmit={submit} className="register-form">
+          <div className="form-group">
+            <input
+              name="name"
+              value={form.name}
+              onChange={change}
+              placeholder="Full Name"
+              className="form-input"
+              required
+            />
+          </div>
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="form-group">
+            <input
+              name="email"
+              value={form.email}
+              onChange={change}
+              placeholder="Email"
+              type="email"
+              className="form-input"
+              required
+            />
+          </div>
 
-          <button type="submit" disabled={loading}>
-            {loading ? "Creating..." : "Create Account"}
+          <div className="form-group">
+            <input
+              name="password"
+              value={form.password}
+              onChange={change}
+              placeholder="Password"
+              type="password"
+              className="form-input"
+              required
+            />
+          </div>
+
+          <button type="submit" className="register-btn" disabled={load}>
+            {load ? "Creating..." : "Create Account"}
           </button>
         </form>
 
-        <p className="register-footer">
-          Already have an account? <Link to="/">Sign in</Link>
-        </p>
+        <div className="register-footer">
+          <p>
+            Already have an account? <Link to="/">Login</Link>
+          </p>
+        </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Register;
+export default Register

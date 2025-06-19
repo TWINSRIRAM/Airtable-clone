@@ -1,94 +1,83 @@
 .login-container {
   min-height: 100vh;
   display: flex;
-  align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  align-items: center;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  padding: 20px;
 }
 
 .login-card {
-  background: white;
-  padding: 40px;
-  border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  background: #fff;
+  padding: 32px;
+  border-radius: 8px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
   width: 100%;
-  max-width: 400px;
+  max-width: 380px;
+}
+
+.login-header {
   text-align: center;
+  margin-bottom: 24px;
 }
 
-.logo {
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.login-header h1 {
+  margin: 0 0 6px;
   font-size: 24px;
-  font-weight: bold;
-  color: white;
-  margin: 0 auto 20px;
-}
-
-.login-card h1 {
-  font-size: 24px;
-  margin-bottom: 8px;
   color: #333;
 }
 
-.login-card p {
+.login-header p {
   color: #666;
-  margin-bottom: 30px;
+  font-size: 14px;
 }
 
-.login-card form {
+.login-form {
   display: flex;
   flex-direction: column;
-  gap: 15px;
+  gap: 14px;
 }
 
-.login-card input {
-  padding: 12px;
-  border: 1px solid #ddd;
+.login-form input {
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #ccc;
   border-radius: 6px;
-  font-size: 16px;
+  outline: none;
 }
 
-.login-card input:focus {
-  outline: none;
+.login-form input:focus {
   border-color: #667eea;
 }
 
-.login-card button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  border: none;
+.login-btn {
+  margin-top: 10px;
   padding: 12px;
+  font-size: 15px;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: #fff;
+  border: none;
   border-radius: 6px;
-  font-size: 16px;
-  font-weight: 600;
   cursor: pointer;
+  font-weight: 600;
 }
 
-.login-card button:hover {
-  opacity: 0.9;
-}
-
-.login-card button:disabled {
+.login-btn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.link-text {
-  margin-top: 20px;
-  font-size: 14px;
+.login-footer {
+  text-align: center;
+  margin-top: 14px;
 }
 
-.link-text a {
+.login-footer a {
   color: #667eea;
   text-decoration: none;
+  font-weight: 500;
 }
 
-.link-text a:hover {
+.login-footer a:hover {
   text-decoration: underline;
 }

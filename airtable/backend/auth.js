@@ -1,31 +1,25 @@
 import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+dotenv.config();
 
-const JWT_SECRET = "8d88dcb7f573d6b2b6d2e14b74a80f0c5b8a7a7b729eeb5e402c7cfddfa88c1f";
+const SECRET = process.env.JWT_SECRET;
 
+export const auth = (req, res, next) => {
+  const h = req.headers["authorization"];
+  if (!h) return res.sendStatus(401);
 
-export const authenticate = (req, res, next) => {
-  const authHeader = req.headers["authorization"];
-  if (!authHeader) return res.status(401).json({ error: "No token provided" });
+  const t = h.startsWith("Bearer ") ? h.slice(7) : h;
 
-  const token = authHeader.startsWith("Bearer ") ? authHeader.slice(7) : authHeader;
-
-  jwt.verify(token, JWT_SECRET, (err, decoded) => {
-    if (err) return res.status(401).json({ error: "Invalid or expired token" });
-
-    req.user = decoded;
+  jwt.verify(t, SECRET, (e, d) => {
+    if (e) return res.sendStatus(401);
+    req.u = d;
     next();
   });
 };
 
-
-export const requireAdmin = (req, res, next) => {
-  if (!req.user?.isAdmin) return res.status(403).json({ error: "Admin access required" });
+export const admin = (req, res, next) => {
+  if (!req.u?.isAdmin) return res.sendStatus(403);
   next();
 };
 
-
-export const generateToken = (payload) => {
-  return jwt.sign(payload, JWT_SECRET, {
-    expiresIn: "24h",
-  });
-};
+export const genToken = (p) => jwt.sign(p, SECRET, { expiresIn: "1d" });

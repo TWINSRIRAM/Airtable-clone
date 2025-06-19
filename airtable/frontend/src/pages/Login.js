@@ -1,65 +1,90 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import axios from "axios";
-import "./Login.css";
+import { useState } from "react"
+import { Link } from "react-router-dom"
+import axios from "axios"
+import "./Login.css"
 
 const Login = ({ onLogin }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  })
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    })
+  }
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+    e.preventDefault()
+    setLoading(true)
+    setError("")
+
     try {
-      const response = await axios.post("http://localhost:5000/login", {
-        email,
-        password,
-      });
-      onLogin(response.data.token);
+      const response = await axios.post("/api/login", formData)
+      onLogin(response.data.token, response.data.user)
     } catch (error) {
-      alert("Login failed. Please check your credentials.");
+      setError(error.response?.data?.error || "Login failed")
     }
-    setLoading(false);
-  };
+
+    setLoading(false)
+  }
 
   return (
     <div className="login-container">
       <div className="login-card">
-        <h1 className="login-logo">AIRTABLE</h1>
-        <h1 className="login-title">Welcome Back</h1>
-        <p className="login-subtitle">Sign in to your workspace</p>
+        <div className="login-header">
+          <h1>Airtable Clone</h1>
+          <p>Sign in to your account</p>
+        </div>
+
+        {error && <div className="error-message">{error}</div>}
 
         <form onSubmit={handleSubmit} className="login-form">
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
+          <div className="form-group">
+            <label htmlFor="email">Email</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required
+              className="form-input"
+            />
+          </div>
 
-          <input
-            type="password"
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="form-group">
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required
+              className="form-input"
+            />
+          </div>
 
-          <button type="submit" disabled={loading}>
+          <button type="submit" disabled={loading} className="login-btn">
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
 
-        <p className="login-footer">
-          Don't have an account? <Link to="/register">Sign up</Link>
-        </p>
+        <div className="login-footer">
+          <p>
+            Don't have an account? <Link to="/register">Sign up</Link>
+          </p>
+        </div>
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default Login;
+export default Login
