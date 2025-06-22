@@ -14,17 +14,31 @@ const Dashboard = ({ user, onLogout }) => {
   }, [])
 
   const fetchTables = async () => {
+    const token = localStorage.getItem("token")
+    if (!token) {
+      alert("Session expired. Please login again.")
+      window.location.href = "/login"
+      return
+    }
+
     try {
-      const token = localStorage.getItem("token")
       const response = await axios.get("http://localhost:5000/api/tables", {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       })
       setTables(response.data)
     } catch (error) {
-      console.error("Fetch tables error:", error)
-      alert("Failed to fetch tables")
+      if ([401, 403].includes(error.response?.status)) {
+        localStorage.removeItem("token")
+        alert("Session expired. Please login again.")
+        window.location.href = "/login"
+      } else {
+        alert("Failed to fetch tables.")
+      }
+    } finally {
+      setLoading(false)
     }
-    setLoading(false)
   }
 
   const deleteTable = async (tableId) => {
@@ -35,10 +49,9 @@ const Dashboard = ({ user, onLogout }) => {
       await axios.delete(`http://localhost:5000/api/tables/${tableId}`, {
         headers: { Authorization: `Bearer ${token}` },
       })
-      setTables(tables.filter((table) => table.id !== tableId))
-    } catch (error) {
-      console.error("Delete table error:", error)
-      alert("Failed to delete table")
+      setTables((prev) => prev.filter((table) => table.id !== tableId))
+    } catch {
+      alert("Failed to delete table.")
     }
   }
 
@@ -48,12 +61,16 @@ const Dashboard = ({ user, onLogout }) => {
     <div className="dashboard-container">
       <nav className="dashboard-nav">
         <div className="dashboard-logo">
-          <div className="logo-box"><span className="logo-text">A</span></div>
+          <div className="logo-box">
+            <span className="logo-text">A</span>
+          </div>
           <h1 className="logo-title">Airtable</h1>
         </div>
         <div className="dashboard-user">
           <span className="user-name">{user?.name}</span>
-          <button onClick={onLogout} className="btn-outline">Sign out</button>
+          <button onClick={onLogout} className="btn-outline">
+            Sign out
+          </button>
         </div>
       </nav>
 
@@ -67,7 +84,9 @@ const Dashboard = ({ user, onLogout }) => {
             </div>
           </div>
           <div className="create-link-wrapper">
-            <Link to="/create-table" className="create-link">＋ Create new base</Link>
+            <Link to="/create-table" className="create-link">
+              ＋ Create new base
+            </Link>
           </div>
         </aside>
 
@@ -80,7 +99,9 @@ const Dashboard = ({ user, onLogout }) => {
           <section className="tables-section">
             <div className="section-header">
               <h2>Recently opened bases</h2>
-              <Link to="/create-table" className="btn-primary">Create a base</Link>
+              <Link to="/create-table" className="btn-primary">
+                Create a base
+              </Link>
             </div>
 
             {tables.length === 0 ? (
@@ -88,7 +109,9 @@ const Dashboard = ({ user, onLogout }) => {
                 <div className="empty-icon">📊</div>
                 <h3>No bases yet</h3>
                 <p>Create your first base to start organizing your data with tables, forms, and more.</p>
-                <Link to="/create-table" className="btn-primary">Create your first base</Link>
+                <Link to="/create-table" className="btn-primary">
+                  Create your first base
+                </Link>
               </div>
             ) : (
               <div className="tables-grid">
@@ -96,8 +119,18 @@ const Dashboard = ({ user, onLogout }) => {
                   <div key={table.id} className="table-card">
                     <div className="table-card-header" />
                     <div className="table-card-actions">
-                      <Link to={`/table/${table.id}`} className="btn-tiny">Open</Link>
-                      <button onClick={(e) => { e.stopPropagation(); deleteTable(table.id); }} className="btn-tiny-red">Delete</button>
+                      <Link to={`/table/${table.id}`} className="btn-tiny">
+                        Open
+                      </Link>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          deleteTable(table.id)
+                        }}
+                        className="btn-tiny-red"
+                      >
+                        Delete
+                      </button>
                     </div>
                     <div className="table-card-body">
                       <div className="table-card-title">
