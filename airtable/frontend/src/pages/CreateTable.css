@@ -1,81 +1,78 @@
-.create-table {
+.create-container {
   padding: 20px;
-  background: #f4f4f4;
-  min-height: 100vh;
-  font-family: Arial, sans-serif;
+  max-width: 800px;
+  margin: auto;
 }
 
-.create-table-header {
+.create-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+}
+
+.create-header h1 {
+  margin: 0;
+}
+
+.logout-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+}
+
+.create-form input,
+.create-form textarea,
+.create-form select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 15px;
+}
+
+.add-field-btn,
+.add-option-btn,
+.create-form button {
+  padding: 8px 12px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  margin-bottom: 10px;
+}
+
+.field-block {
+  border: 1px solid #ccc;
+  padding: 15px;
   margin-bottom: 20px;
 }
 
-.create-table-header h1 {
-  margin: 0;
-  font-size: 20px;
-}
-
-.create-table-header button {
-  padding: 6px 12px;
-  font-size: 14px;
-  border: 1px solid #ccc;
-  background: white;
-  cursor: pointer;
-}
-
-.user-info {
+.field-row {
   display: flex;
-  align-items: center;
   gap: 10px;
+  align-items: center;
 }
 
-.create-table-form {
-  background: white;
-  padding: 20px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  max-width: 800px;
-  margin: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
+.field-row input,
+.field-row select {
+  flex: 1;
 }
 
-.create-table-form input,
-.create-table-form textarea,
-.create-table-form select {
-  padding: 8px;
-  font-size: 14px;
-  width: 100%;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
-
-.field-item {
-  padding: 12px;
-  border: 1px solid #eee;
-  background: #fafafa;
-  border-radius: 4px;
-}
-
-.field-item > * {
-  margin-bottom: 8px;
-}
-
-.field-item button {
-  padding: 4px 8px;
-  font-size: 12px;
-  margin-top: 4px;
-}
-
-.create-table-form button[type="submit"] {
-  background: #667eea;
+.remove-btn {
+  background-color: #dc3545;
   color: white;
-  padding: 10px;
   border: none;
-  font-weight: bold;
-  cursor: pointer;
-  border-radius: 4px;
+  padding: 5px 10px;
+}
+
+.option-section {
+  margin-top: 10px;
+}
+
+.option-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 5px;
 }

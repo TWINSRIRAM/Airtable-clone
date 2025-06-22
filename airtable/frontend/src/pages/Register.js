@@ -3,98 +3,91 @@
 import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import axios from "axios"
-import "./Register.css"
 
 const Register = () => {
-  const [form, setForm] = useState({ name: "", email: "", password: "" })
+  const [name, setName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-  const [load, setLoad] = useState(false)
-  const go = useNavigate()
+  const navigate = useNavigate()
 
-  const change = (e) => setForm({ ...form, [e.target.name]: e.target.value })
-
-  const submit = async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    setLoad(true)
+    setLoading(true)
     setError("")
 
     try {
-      const res = await axios.post("/api/register", form)
-      if (res.data.token) {
-        localStorage.setItem("token", res.data.token)
-        go("/dashboard")
-      } else {
-        setError("Unexpected error. Try again.")
-      }
-    } catch (err) {
-      if (err.response?.status === 409) {
-        setError("Email already exists")
-      } else if (err.response?.data?.error) {
-        setError(err.response.data.error)
-      } else {
-        setError("Registration failed")
-      }
+      await axios.post("http://localhost:5000/api/register", {
+        name,
+        email,
+        password,
+      })
+
+      alert("Registration successful! Please login.")
+      navigate("/login")
+    } catch (error) {
+      console.error("Registration error:", error)
+      setError(error.response?.data?.error || "Registration failed")
     }
 
-    setLoad(false)
+    setLoading(false)
   }
 
   return (
-    <div className="register-container">
-      <div className="register-card">
-        <div className="register-header">
-          <h1>Create Account</h1>
-          <p>Join Airtable Clone today</p>
+    <div style={{ maxWidth: "400px", margin: "50px auto", padding: "20px", border: "1px solid #ccc" }}>
+      <h1>Create Account</h1>
+      <p>Join Airtable Clone today</p>
+
+      {error && <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
+
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: "15px" }}>
+          <input
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Full Name"
+            style={{ width: "100%", padding: "8px" }}
+            required
+          />
         </div>
 
-        {error && <div className="error-message">{error}</div>}
-
-        <form onSubmit={submit} className="register-form">
-          <div className="form-group">
-            <input
-              name="name"
-              value={form.name}
-              onChange={change}
-              placeholder="Full Name"
-              className="form-input"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <input
-              name="email"
-              value={form.email}
-              onChange={change}
-              placeholder="Email"
-              type="email"
-              className="form-input"
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <input
-              name="password"
-              value={form.password}
-              onChange={change}
-              placeholder="Password"
-              type="password"
-              className="form-input"
-              required
-            />
-          </div>
-
-          <button type="submit" className="register-btn" disabled={load}>
-            {load ? "Creating..." : "Create Account"}
-          </button>
-        </form>
-
-        <div className="register-footer">
-          <p>
-            Already have an account? <Link to="/">Login</Link>
-          </p>
+        <div style={{ marginBottom: "15px" }}>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            placeholder="Email"
+            style={{ width: "100%", padding: "8px" }}
+            required
+          />
         </div>
+
+        <div style={{ marginBottom: "15px" }}>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Password"
+            style={{ width: "100%", padding: "8px" }}
+            required
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          style={{ width: "100%", padding: "10px", backgroundColor: "#28a745", color: "white", border: "none" }}
+        >
+          {loading ? "Creating..." : "Create Account"}
+        </button>
+      </form>
+
+      <div style={{ marginTop: "15px", textAlign: "center" }}>
+        <p>
+          Already have an account? <Link to="/login">Login</Link>
+        </p>
       </div>
     </div>
   )

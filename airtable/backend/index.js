@@ -1,9 +1,10 @@
 import express from "express";
 import cors from "cors";
 import bcrypt from "bcrypt";
+import dotenv from "dotenv";
 import db from "./db.js";
 import { genToken as token, auth } from "./auth.js";
-import dotenv from "dotenv";
+
 dotenv.config();
 
 const app = express();
@@ -13,26 +14,21 @@ app.use(cors());
 app.use(express.json());
 
 app.post("/reg", async (req, res) => {
-  const { name, email, password: p } = req.body;
-  try {
-    const hp = await bcrypt.hash(p, 10);
-    db.query("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", [name, email, hp], (e) => {
-      if (e) return res.sendStatus(500);
-      res.json({ msg: "ok" });
-    });
-  } catch {
-    res.sendStatus(500);
-  }
+  const { name, email, password } = req.body;
+  const hash = await bcrypt.hash(password, 10);
+  db.query("INSERT INTO users (name, email, password) VALUES (?, ?, ?)", [name, email, hash], () => {
+    res.json({ msg: "ok" });
+  });
 });
 
 app.post("/login", (req, res) => {
-  const { email, password: p } = req.body;
-  db.query("SELECT * FROM users WHERE email = ?", [email], async (e, r) => {
-    if (e || r.length === 0) return res.sendStatus(401);
-    const u = r[0];
-    const ok = await bcrypt.compare(p, u.password);
-    if (!ok) return res.sendStatus(401);
-    const t = token({ id: u.id, name: u.name, email: u.email });
+  const { email, password } = req.body;
+  db.query("SELECT * FROM users WHERE email = ?", [email], async (err, rows) => {
+    if (!rows.length) return res.sendStatus(401);
+    const user = rows[0];
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) return res.sendStatus(401);
+    const t = token({ id: user.id, name: user.name, email: user.email });
     res.json({ token: t });
   });
 });
@@ -42,5 +38,5 @@ app.get("/me", auth, (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`🚀 http://localhost:${port}`);
+  console.log(`http://localhost:${port}`);
 });

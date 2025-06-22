@@ -8,7 +8,6 @@ import "./Dashboard.css"
 const Dashboard = ({ user, onLogout }) => {
   const [tables, setTables] = useState([])
   const [loading, setLoading] = useState(true)
-  const [error, setError] = useState("")
 
   useEffect(() => {
     fetchTables()
@@ -17,131 +16,107 @@ const Dashboard = ({ user, onLogout }) => {
   const fetchTables = async () => {
     try {
       const token = localStorage.getItem("token")
-
-      if (!token) {
-        setError("No authentication token found")
-        onLogout()
-        return
-      }
-
-      console.log("Fetching tables...")
-      const response = await axios.get("/api/tables", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+      const response = await axios.get("http://localhost:5000/api/tables", {
+        headers: { Authorization: `Bearer ${token}` },
       })
-
-      console.log("Tables fetched:", response.data)
       setTables(response.data)
-      setError("")
     } catch (error) {
       console.error("Fetch tables error:", error)
-
-      if (error.code === "ERR_NETWORK") {
-        setError("Cannot connect to server. Make sure the backend is running on http://localhost:5000")
-      } else if (error.response?.status === 401 || error.response?.status === 403) {
-        setError("Authentication failed. Please login again.")
-        localStorage.removeItem("token")
-        localStorage.removeItem("user")
-        onLogout()
-      } else {
-        setError("Failed to fetch tables: " + (error.response?.data?.error || error.message))
-      }
+      alert("Failed to fetch tables")
     }
     setLoading(false)
   }
 
   const deleteTable = async (tableId) => {
-    if (!window.confirm("Are you sure you want to delete this table?")) {
-      return
-    }
+    if (!window.confirm("Are you sure you want to delete this table?")) return
 
     try {
       const token = localStorage.getItem("token")
-      await axios.delete(`/api/tables/${tableId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+      await axios.delete(`http://localhost:5000/api/tables/${tableId}`, {
+        headers: { Authorization: `Bearer ${token}` },
       })
       setTables(tables.filter((table) => table.id !== tableId))
-      setError("")
     } catch (error) {
       console.error("Delete table error:", error)
-
-      if (error.response?.status === 401 || error.response?.status === 403) {
-        setError("Authentication failed. Please login again.")
-        onLogout()
-      } else {
-        setError("Failed to delete table: " + (error.response?.data?.error || error.message))
-      }
+      alert("Failed to delete table")
     }
   }
 
-  if (loading) {
-    return <div className="loading">Loading...</div>
-  }
+  if (loading) return <div className="dashboard-loading">Loading...</div>
 
   return (
-    <div className="dashboard">
-      <header className="dashboard-header">
-        <div className="header-content">
-          <h1>Airtable Clone</h1>
-          <div className="header-actions">
-            <span className="welcome-text">Welcome, {user?.name}</span>
-            <button onClick={onLogout} className="logout-btn">
-              Logout
-            </button>
-          </div>
+    <div className="dashboard-container">
+      <nav className="dashboard-nav">
+        <div className="dashboard-logo">
+          <div className="logo-box"><span className="logo-text">A</span></div>
+          <h1 className="logo-title">Airtable</h1>
         </div>
-      </header>
+        <div className="dashboard-user">
+          <span className="user-name">{user?.name}</span>
+          <button onClick={onLogout} className="btn-outline">Sign out</button>
+        </div>
+      </nav>
 
-      <main className="dashboard-main">
-        <div className="dashboard-content">
-          <div className="dashboard-top">
-            <h2>My Tables</h2>
-            <Link to="/create-table" className="create-table-btn">
-              Create New Table
-            </Link>
+      <div className="dashboard-main">
+        <aside className="dashboard-sidebar">
+          <div className="workspace-header">
+            <h2>Workspace</h2>
+            <div className="workspace-box">
+              <div className="workspace-initial">{user?.name?.charAt(0).toUpperCase()}</div>
+              <span>{user?.name}'s workspace</span>
+            </div>
+          </div>
+          <div className="create-link-wrapper">
+            <Link to="/create-table" className="create-link">＋ Create new base</Link>
+          </div>
+        </aside>
+
+        <main className="dashboard-content">
+          <div className="content-header">
+            <h1>Home</h1>
+            <p>Welcome back, {user?.name}</p>
           </div>
 
-          {error && <div className="error-message">{error}</div>}
-
-          {tables.length === 0 && !error ? (
-            <div className="empty-state">
-              <div className="empty-icon">📊</div>
-              <h3>No tables yet</h3>
-              <p>Create your first table to get started with organizing your data</p>
-              <Link to="/create-table" className="create-first-table-btn">
-                Create Your First Table
-              </Link>
+          <section className="tables-section">
+            <div className="section-header">
+              <h2>Recently opened bases</h2>
+              <Link to="/create-table" className="btn-primary">Create a base</Link>
             </div>
-          ) : (
-            <div className="tables-grid">
-              {tables.map((table) => (
-                <div key={table.id} className="table-card">
-                  <div className="table-card-header">
-                    <h3>{table.name}</h3>
-                    <div className="table-actions">
-                      <Link to={`/table/${table.id}`} className="view-btn">
-                        View
-                      </Link>
-                      <button onClick={() => deleteTable(table.id)} className="delete-btn">
-                        Delete
-                      </button>
+
+            {tables.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">📊</div>
+                <h3>No bases yet</h3>
+                <p>Create your first base to start organizing your data with tables, forms, and more.</p>
+                <Link to="/create-table" className="btn-primary">Create your first base</Link>
+              </div>
+            ) : (
+              <div className="tables-grid">
+                {tables.map((table) => (
+                  <div key={table.id} className="table-card">
+                    <div className="table-card-header" />
+                    <div className="table-card-actions">
+                      <Link to={`/table/${table.id}`} className="btn-tiny">Open</Link>
+                      <button onClick={(e) => { e.stopPropagation(); deleteTable(table.id); }} className="btn-tiny-red">Delete</button>
+                    </div>
+                    <div className="table-card-body">
+                      <div className="table-card-title">
+                        <div className="table-icon">📋</div>
+                        <h3>{table.name}</h3>
+                      </div>
+                      <p>{table.description || "No description provided"}</p>
+                      <div className="table-meta">
+                        <span>Created {new Date(table.created_at).toLocaleDateString()}</span>
+                        <span>Personal workspace</span>
+                      </div>
                     </div>
                   </div>
-                  <p className="table-description">{table.description || "No description"}</p>
-                  <div className="table-meta">
-                    <span>Created: {new Date(table.created_at).toLocaleDateString()}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-      </main>
+                ))}
+              </div>
+            )}
+          </section>
+        </main>
+      </div>
     </div>
   )
 }

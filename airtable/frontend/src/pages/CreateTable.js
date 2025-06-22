@@ -7,120 +7,161 @@ import "./CreateTable.css"
 
 const CreateTable = ({ user, onLogout }) => {
   const [name, setName] = useState("")
-  const [desc, setDesc] = useState("")
+  const [description, setDescription] = useState("")
   const [fields, setFields] = useState([])
-  const [load, setLoad] = useState(false)
-  const nav = useNavigate()
+  const [loading, setLoading] = useState(false)
+  const navigate = useNavigate()
 
-const types = [
-  "text",
-  "number",
-  "email",
-  "url",
-  "phone",
-  "date",
-  "datetime-local",
-  "checkbox",
-  "select",
-  "multiselect",
-  "textarea",
-  "rating"
-]
+  const fieldTypes = [
+    "text", "number", "email", "url", "phone", "date", "datetime-local",
+    "checkbox", "select", "multiselect", "textarea", "rating", "file", "color"
+  ]
 
   const addField = () => {
-    setFields([...fields, { id: Date.now(), name: "", type: "text", required: false, options: [] }])
+    setFields([...fields, {
+      id: Date.now(),
+      name: "",
+      type: "text",
+      required: false,
+      options: [],
+    }])
   }
 
-  const setVal = (id, key, val) => {
-    setFields(fields.map(f => f.id === id ? { ...f, [key]: val } : f))
+  const updateField = (id, key, value) => {
+    setFields(fields.map(f => f.id === id ? { ...f, [key]: value } : f))
   }
 
-  const removeField = (id) => {
-    setFields(fields.filter(f => f.id !== id))
+  const removeField = (id) => setFields(fields.filter(f => f.id !== id))
+
+  const addOption = (fieldId) => {
+    const field = fields.find(f => f.id === fieldId)
+    updateField(fieldId, "options", [...field.options, ""])
   }
 
-  const addOpt = (id) => {
-    const f = fields.find(f => f.id === id)
-    setVal(id, "options", [...f.options, ""])
+  const updateOption = (fieldId, index, value) => {
+    const field = fields.find(f => f.id === fieldId)
+    const options = [...field.options]
+    options[index] = value
+    updateField(fieldId, "options", options)
   }
 
-  const setOpt = (id, idx, val) => {
-    const f = fields.find(f => f.id === id)
-    const newOpts = [...f.options]
-    newOpts[idx] = val
-    setVal(id, "options", newOpts)
+  const removeOption = (fieldId, index) => {
+    const field = fields.find(f => f.id === fieldId)
+    const options = field.options.filter((_, i) => i !== index)
+    updateField(fieldId, "options", options)
   }
 
-  const removeOpt = (id, idx) => {
-    const f = fields.find(f => f.id === id)
-    const newOpts = f.options.filter((_, i) => i !== idx)
-    setVal(id, "options", newOpts)
-  }
-
-  const send = async (e) => {
-    e.preventDefault()
-    setLoad(true)
-    const token = localStorage.getItem("token")
-    const data = {
-      name: name.trim(),
-      description: desc.trim(),
-      fields: fields.map(f => ({
-        ...f,
-        name: f.name.trim(),
-        options: f.options.map(o => o.trim())
-      }))
+  const validateForm = () => {
+    if (!name.trim()) return "Table name is required"
+    if (fields.length === 0) return "At least one field is required"
+    for (const f of fields) {
+      if (!f.name.trim()) return "All fields must have a name"
+      if ((f.type === "select" || f.type === "multiselect") && f.options.length === 0) {
+        return `Field "${f.name}" must have at least one option`
+      }
     }
-    const res = await axios.post("http://localhost:5000/api/tables", data, {
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" }
-    })
-    nav(`/table/${res.data.id}`)
-    setLoad(false)
+    return null
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    const error = validateForm()
+    if (error) return alert(error)
+
+    setLoading(true)
+    try {
+      const token = localStorage.getItem("token")
+      const payload = {
+        name: name.trim(),
+        description: description.trim(),
+        fields: fields.map(f => ({
+          ...f,
+          name: f.name.trim(),
+          options: f.options.map(o => o.trim()).filter(o => o),
+        }))
+      }
+
+      const res = await axios.post("http://localhost:5000/api/tables", payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+
+      navigate(`/table/${res.data.id}`)
+    } catch (err) {
+      alert("Failed to create table: " + (err.response?.data?.error || err.message))
+    }
+    setLoading(false)
   }
 
   return (
-    <div className="create-table">
-      <div className="create-table-header">
-        <button onClick={() => nav("/dashboard")} className="back-btn">← Back</button>
+    <div className="create-container">
+      <header className="create-header">
+        <button onClick={() => navigate("/dashboard")}>← Back</button>
         <h1>Create Table</h1>
-        <div className="user-info">
+        <div>
           <span>{user?.name}</span>
-          <button onClick={onLogout} className="logout-btn">Logout</button>
+          <button className="logout-btn" onClick={onLogout}>Logout</button>
         </div>
-      </div>
+      </header>
 
-      <form onSubmit={send} className="create-table-form">
-        <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Table name" />
-        <textarea value={desc} onChange={(e) => setDesc(e.target.value)} placeholder="Description" />
+      <form onSubmit={handleSubmit} className="create-form">
+        <input
+          value={name}
+          onChange={e => setName(e.target.value)}
+          placeholder="Table name"
+          required
+        />
+        <textarea
+          value={description}
+          onChange={e => setDescription(e.target.value)}
+          placeholder="Description (optional)"
+        />
 
-        <button type="button" onClick={addField}>Add Field</button>
+        <button type="button" className="add-field-btn" onClick={addField}>+ Add Field</button>
 
-        {fields.map((f, i) => (
-          <div key={f.id} className="field-item">
-            <input value={f.name} onChange={(e) => setVal(f.id, "name", e.target.value)} placeholder="Field name" />
-            <select value={f.type} onChange={(e) => setVal(f.id, "type", e.target.value)}>
-              {types.map(t => <option key={t} value={t}>{t}</option>)}
-            </select>
-            <label>
-              <input type="checkbox" checked={f.required} onChange={(e) => setVal(f.id, "required", e.target.checked)} />
-              Required
-            </label>
-            <button type="button" onClick={() => removeField(f.id)}>Remove</button>
+        {fields.map((f) => (
+          <div key={f.id} className="field-block">
+            <div className="field-row">
+              <input
+                value={f.name}
+                onChange={e => updateField(f.id, "name", e.target.value)}
+                placeholder="Field name"
+                required
+              />
+              <select value={f.type} onChange={e => updateField(f.id, "type", e.target.value)}>
+                {fieldTypes.map(t => <option key={t}>{t}</option>)}
+              </select>
+              <label>
+                <input
+                  type="checkbox"
+                  checked={f.required}
+                  onChange={e => updateField(f.id, "required", e.target.checked)}
+                />
+                Required
+              </label>
+              <button type="button" className="remove-btn" onClick={() => removeField(f.id)}>×</button>
+            </div>
 
             {(f.type === "select" || f.type === "multiselect") && (
-              <>
-                <button type="button" onClick={() => addOpt(f.id)}>+ Option</button>
-                {f.options.map((o, j) => (
-                  <div key={j}>
-                    <input value={o} onChange={(e) => setOpt(f.id, j, e.target.value)} placeholder="Option" />
-                    <button type="button" onClick={() => removeOpt(f.id, j)}>x</button>
+              <div className="option-section">
+                <button type="button" className="add-option-btn" onClick={() => addOption(f.id)}>+ Option</button>
+                {f.options.map((opt, idx) => (
+                  <div key={idx} className="option-row">
+                    <input
+                      value={opt}
+                      onChange={e => updateOption(f.id, idx, e.target.value)}
+                      placeholder="Option value"
+                    />
+                    <button type="button" onClick={() => removeOption(f.id, idx)}>×</button>
                   </div>
                 ))}
-              </>
+              </div>
             )}
           </div>
         ))}
 
-        <button type="submit" disabled={load}>{load ? "Creating..." : "Create"}</button>
+        <button type="submit" disabled={loading}>
+          {loading ? "Creating..." : "Create Table"}
+        </button>
       </form>
     </div>
   )

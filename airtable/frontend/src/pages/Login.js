@@ -3,22 +3,12 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import axios from "axios"
-import "./Login.css"
 
 const Login = ({ onLogin }) => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  })
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
-
-  const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    })
-  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -26,9 +16,17 @@ const Login = ({ onLogin }) => {
     setError("")
 
     try {
-      const response = await axios.post("/api/login", formData)
-      onLogin(response.data.token, response.data.user)
+      const response = await axios.post("http://localhost:5000/api/login", {
+        email,
+        password,
+      })
+
+      const { token, user } = response.data
+      localStorage.setItem("token", token)
+      localStorage.setItem("user", JSON.stringify(user))
+      onLogin(user)
     } catch (error) {
+      console.error("Login error:", error)
       setError(error.response?.data?.error || "Login failed")
     }
 
@@ -36,52 +34,48 @@ const Login = ({ onLogin }) => {
   }
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <div className="login-header">
-          <h1>Airtable Clone</h1>
-          <p>Sign in to your account</p>
+    <div style={{ maxWidth: "400px", margin: "50px auto", padding: "20px", border: "1px solid #ccc" }}>
+      <h1>Airtable Clone</h1>
+      <p>Sign in to your account</p>
+
+      {error && <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
+
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: "15px" }}>
+          <label>Email</label>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+          />
         </div>
 
-        {error && <div className="error-message">{error}</div>}
-
-        <form onSubmit={handleSubmit} className="login-form">
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              required
-              className="form-input"
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="password">Password</label>
-            <input
-              type="password"
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-              className="form-input"
-            />
-          </div>
-
-          <button type="submit" disabled={loading} className="login-btn">
-            {loading ? "Signing in..." : "Sign In"}
-          </button>
-        </form>
-
-        <div className="login-footer">
-          <p>
-            Don't have an account? <Link to="/register">Sign up</Link>
-          </p>
+        <div style={{ marginBottom: "15px" }}>
+          <label>Password</label>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            style={{ width: "100%", padding: "8px", marginTop: "5px" }}
+          />
         </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          style={{ width: "100%", padding: "10px", backgroundColor: "#007bff", color: "white", border: "none" }}
+        >
+          {loading ? "Signing in..." : "Sign In"}
+        </button>
+      </form>
+
+      <div style={{ marginTop: "15px", textAlign: "center" }}>
+        <p>
+          Don't have an account? <Link to="/register">Sign up</Link>
+        </p>
       </div>
     </div>
   )
