@@ -1,64 +1,51 @@
-"use client"
-
-import { useState, useEffect } from "react"
-import { Link } from "react-router-dom"
-import axios from "axios"
-import "./Dashboard.css"
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import axios from "../utils/axiosWithAuth";
+import "./Dashboard.css";
 
 const Dashboard = ({ user, onLogout }) => {
-  const [tables, setTables] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [tables, setTables] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const api = axios();
 
   useEffect(() => {
-    fetchTables()
-  }, [])
+    fetchTables();
+  }, []);
 
   const fetchTables = async () => {
-    const token = localStorage.getItem("token")
-    if (!token) {
-      alert("Session expired. Please login again.")
-      window.location.href = "/login"
-      return
-    }
-
     try {
-      const response = await axios.get("http://localhost:5000/api/tables", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      setTables(response.data)
+      const response = await api.get("/api/tables");
+      setTables(response.data);
     } catch (error) {
       if ([401, 403].includes(error.response?.status)) {
-        localStorage.removeItem("token")
-        alert("Session expired. Please login again.")
-        window.location.href = "/login"
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+        alert("Session expired. Please login again.");
+        window.location.href = "/login";
       } else {
-        alert("Failed to fetch tables.")
+        alert("Failed to fetch tables.");
       }
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const deleteTable = async (tableId) => {
-    if (!window.confirm("Are you sure you want to delete this table?")) return
-
+    if (!window.confirm("Are you sure you want to delete this table?")) return;
     try {
-      const token = localStorage.getItem("token")
-      await axios.delete(`http://localhost:5000/api/tables/${tableId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      setTables((prev) => prev.filter((table) => table.id !== tableId))
+      await api.delete(`/api/tables/${tableId}`);
+      setTables((prev) => prev.filter((table) => table.id !== tableId));
     } catch {
-      alert("Failed to delete table.")
+      alert("Failed to delete table.");
     }
-  }
+  };
 
-  if (loading) return <div className="dashboard-loading">Loading...</div>
+  if (loading) return <div className="dashboard-loading">Loading...</div>;
 
   return (
     <div className="dashboard-container">
+      {/* Navbar */}
       <nav className="dashboard-nav">
         <div className="dashboard-logo">
           <div className="logo-box">
@@ -74,22 +61,27 @@ const Dashboard = ({ user, onLogout }) => {
         </div>
       </nav>
 
+      {/* Main */}
       <div className="dashboard-main">
+        {/* Sidebar */}
         <aside className="dashboard-sidebar">
           <div className="workspace-header">
             <h2>Workspace</h2>
             <div className="workspace-box">
-              <div className="workspace-initial">{user?.name?.charAt(0).toUpperCase()}</div>
+              <div className="workspace-initial">
+                {user?.name?.charAt(0).toUpperCase()}
+              </div>
               <span>{user?.name}'s workspace</span>
             </div>
-          </div>
-          <div className="create-link-wrapper">
-            <Link to="/create-table" className="create-link">
-              ＋ Create new base
-            </Link>
+            <div className="create-link-wrapper">
+              <Link to="/create-table" className="create-link">
+                ＋ Create new base
+              </Link>
+            </div>
           </div>
         </aside>
 
+        {/* Main Content */}
         <main className="dashboard-content">
           <div className="content-header">
             <h1>Home</h1>
@@ -99,16 +91,16 @@ const Dashboard = ({ user, onLogout }) => {
           <section className="tables-section">
             <div className="section-header">
               <h2>Recently opened bases</h2>
-              <Link to="/create-table" className="btn-primary">
-                Create a base
-              </Link>
             </div>
 
             {tables.length === 0 ? (
               <div className="empty-state">
                 <div className="empty-icon">📊</div>
                 <h3>No bases yet</h3>
-                <p>Create your first base to start organizing your data with tables, forms, and more.</p>
+                <p>
+                  Create your first base to start organizing your data with
+                  tables, forms, and more.
+                </p>
                 <Link to="/create-table" className="btn-primary">
                   Create your first base
                 </Link>
@@ -117,21 +109,46 @@ const Dashboard = ({ user, onLogout }) => {
               <div className="tables-grid">
                 {tables.map((table) => (
                   <div key={table.id} className="table-card">
-                    <div className="table-card-header" />
+                    
                     <div className="table-card-actions">
-                      <Link to={`/table/${table.id}`} className="btn-tiny">
+                      <Link
+                        to={`/table/${table.id}`}
+                        style={{
+                          padding: "6px 14px",
+                          backgroundColor: "#2563eb",
+                          color: "white",
+                          borderRadius: "999px",
+                          textDecoration: "none",
+                          fontSize: "14px",
+                          border: "none",
+                          cursor: "pointer",
+                          display: "inline-block",
+                        }}
+                      >
                         Open
                       </Link>
+
                       <button
                         onClick={(e) => {
-                          e.stopPropagation()
-                          deleteTable(table.id)
+                          e.stopPropagation();
+                          deleteTable(table.id);
                         }}
-                        className="btn-tiny-red"
+                        style={{
+                          padding: "6px 14px",
+                          backgroundColor: "#ef4444",
+                          color: "white",
+                          borderRadius: "999px",
+                          fontSize: "14px",
+                          border: "none",
+                          cursor: "pointer",
+                          display: "inline-block",
+                          marginLeft: "8px",
+                        }}
                       >
                         Delete
                       </button>
                     </div>
+
                     <div className="table-card-body">
                       <div className="table-card-title">
                         <div className="table-icon">📋</div>
@@ -139,7 +156,10 @@ const Dashboard = ({ user, onLogout }) => {
                       </div>
                       <p>{table.description || "No description provided"}</p>
                       <div className="table-meta">
-                        <span>Created {new Date(table.created_at).toLocaleDateString()}</span>
+                        <span>
+                          Created{" "}
+                          {new Date(table.created_at).toLocaleDateString()}
+                        </span>
                         <span>Personal workspace</span>
                       </div>
                     </div>
@@ -151,7 +171,7 @@ const Dashboard = ({ user, onLogout }) => {
         </main>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Dashboard
+export default Dashboard;

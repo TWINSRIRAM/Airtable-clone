@@ -1,78 +1,80 @@
+body {
+  background: #f4f6f8;
+  font-family: "Segoe UI", sans-serif;
+}
+
 .table-container {
   padding: 20px;
-}
-
-.center {
-  text-align: center;
-  padding: 40px;
-}
-
-.error {
-  color: red;
 }
 
 .table-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid #ccc;
-  padding-bottom: 10px;
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
   margin-bottom: 20px;
 }
 
 .back-btn,
 .logout-btn {
-  background-color: #6c757d;
-  color: white;
-  padding: 5px 10px;
+  background: none;
   border: none;
+  color: #2563eb;
+  cursor: pointer;
 }
 
-.logout-btn {
-  background-color: #dc3545;
-  margin-left: 10px;
+.user-actions {
+  display: flex;
+  gap: 12px;
+  align-items: center;
 }
 
 .toggle-btn {
-  padding: 10px 15px;
-  border: none;
+  background: #2563eb;
   color: white;
-  margin-bottom: 20px;
-}
-
-.toggle-btn.add {
-  background-color: #28a745;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-bottom: 10px;
 }
 
 .toggle-btn.cancel {
-  background-color: #dc3545;
+  background: #ef4444;
 }
 
 .record-form {
-  border: 1px solid #ccc;
-  padding: 15px;
-  margin-bottom: 20px;
-  max-width: 600px;
+  background: white;
+  padding: 16px;
+  border-radius: 8px;
+  margin-bottom: 16px;
 }
 
 .field-group {
-  margin-bottom: 15px;
+  margin-bottom: 12px;
 }
 
 .field-group label {
   display: block;
-  margin-bottom: 5px;
-  font-weight: bold;
-}
-
-.field-group label span {
-  color: red;
+  margin-bottom: 4px;
 }
 
 .field-input {
   width: 100%;
-  padding: 6px;
-  border: 1px solid #ccc;
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.save-btn {
+  background: #10b981;
+  color: white;
+  padding: 6px 12px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
 .table-wrapper {
@@ -82,43 +84,55 @@
 table {
   width: 100%;
   border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 th, td {
-  border: 1px solid #ccc;
+  border: 1px solid #e5e7eb;
   padding: 10px;
   text-align: left;
 }
 
-thead {
-  background-color: #f8f9fa;
+th {
+  background: #f9fafb;
 }
 
 .action-btn {
-  padding: 5px 10px;
+  background: #e5e7eb;
+  color: #374151;
   border: none;
-  color: white;
-  margin-right: 5px;
-}
-
-.action-btn.edit {
-  background-color: #007bff;
-}
-
-.action-btn.delete {
-  background-color: #dc3545;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 4px;
 }
 
 .action-btn.save {
-  background-color: #28a745;
+  background: #10b981;
+  color: white;
 }
 
 .action-btn.cancel {
-  background-color: #6c757d;
+  background: #ef4444;
+  color: white;
 }
 
-.no-records {
+.action-btn.edit {
+  background: #2563eb;
+  color: white;
+}
+
+.action-btn.delete {
+  background: #ef4444;
+  color: white;
+}
+
+.no-records, .center, .error {
   text-align: center;
-  padding: 40px;
-  color: #777;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-top: 20px;
 }

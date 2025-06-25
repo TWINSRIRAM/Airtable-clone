@@ -1,8 +1,7 @@
-"use client"
-
 import { useState } from "react"
 import { Link } from "react-router-dom"
 import axios from "axios"
+import "./Auth.css"
 
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState("")
@@ -16,67 +15,47 @@ const Login = ({ onLogin }) => {
     setError("")
 
     try {
-      const response = await axios.post("http://localhost:5000/api/login", {
-        email,
-        password,
-      })
-
-      const { token, user } = response.data
+      const res = await axios.post("http://localhost:5000/api/login", { email, password })
+      const { token, user } = res.data
       localStorage.setItem("token", token)
       localStorage.setItem("user", JSON.stringify(user))
       onLogin(user)
-    } catch (error) {
-      console.error("Login error:", error)
-      setError(error.response?.data?.error || "Login failed")
+    } catch (err) {
+      setError(err.response?.data?.error || "Login failed")
     }
-
     setLoading(false)
   }
 
   return (
-    <div style={{ maxWidth: "400px", margin: "50px auto", padding: "20px", border: "1px solid #ccc" }}>
+    <div className="auth-container">
       <h1>Airtable Clone</h1>
       <p>Sign in to your account</p>
-
-      {error && <div style={{ color: "red", marginBottom: "10px" }}>{error}</div>}
+      {error && <div className="auth-error">{error}</div>}
 
       <form onSubmit={handleSubmit}>
-        <div style={{ marginBottom: "15px" }}>
-          <label>Email</label>
-          <input
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-            style={{ width: "100%", padding: "8px", marginTop: "5px" }}
-          />
-        </div>
+        <input
+          type="email"
+          value={email}
+          placeholder="Email"
+          onChange={(e) => setEmail(e.target.value)}
+          required
+        />
+        <input
+          type="password"
+          value={password}
+          placeholder="Password"
+          onChange={(e) => setPassword(e.target.value)}
+          required
+        />
 
-        <div style={{ marginBottom: "15px" }}>
-          <label>Password</label>
-          <input
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-            style={{ width: "100%", padding: "8px", marginTop: "5px" }}
-          />
-        </div>
-
-        <button
-          type="submit"
-          disabled={loading}
-          style={{ width: "100%", padding: "10px", backgroundColor: "#007bff", color: "white", border: "none" }}
-        >
+        <button type="submit" disabled={loading}>
           {loading ? "Signing in..." : "Sign In"}
         </button>
       </form>
 
-      <div style={{ marginTop: "15px", textAlign: "center" }}>
-        <p>
-          Don't have an account? <Link to="/register">Sign up</Link>
-        </p>
-      </div>
+      <p>
+        Don't have an account? <Link to="/register">Sign up</Link>
+      </p>
     </div>
   )
 }

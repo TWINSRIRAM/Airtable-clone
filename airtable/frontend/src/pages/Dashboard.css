@@ -1,47 +1,41 @@
 body {
+  margin: 0;
   font-family: "Segoe UI", sans-serif;
+  background-color: #f7f9fb;
+  color: #222;
 }
 
-.dashboard-container {
-  min-height: 100vh;
-  background-color: #f4f6f8;
-}
-
+/* Navbar */
 .dashboard-nav {
-  background-color: white;
-  border-bottom: 1px solid #e1e5e9;
-  padding: 0 24px;
-  height: 64px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  padding: 14px 24px;
+  background-color: white;
+  border-bottom: 1px solid #e2e8f0;
 }
 
 .dashboard-logo {
   display: flex;
   align-items: center;
+  gap: 8px;
 }
 
 .logo-box {
-  width: 32px;
-  height: 32px;
-  background-color: #2d7ff9;
-  border-radius: 8px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-right: 12px;
-}
-
-.logo-text {
+  background-color: #2563eb;
   color: white;
+  border-radius: 6px;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: bold;
 }
 
 .logo-title {
-  margin: 0;
-  font-size: 20px;
-  color: #1f2937;
+  font-weight: 600;
+  font-size: 18px;
 }
 
 .dashboard-user {
@@ -50,210 +44,178 @@ body {
   gap: 12px;
 }
 
-.user-name {
-  color: #6b7280;
-  font-size: 14px;
-}
-
 .btn-outline {
-  padding: 6px 12px;
-  border: 1px solid #d1d5db;
-  background-color: white;
-  color: #374151;
+  padding: 4px 10px;
+  border: 1px solid #cbd5e1;
   border-radius: 6px;
+  background-color: white;
   cursor: pointer;
 }
 
+.btn-outline:hover {
+  background-color: #f1f5f9;
+}
+
+/* Main Layout */
 .dashboard-main {
   display: flex;
 }
 
 .dashboard-sidebar {
-  width: 260px;
-  background-color: white;
-  border-right: 1px solid #e1e5e9;
-  padding: 24px;
+  width: 240px;
+  background-color: #fff;
+  border-right: 1px solid #e2e8f0;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 58px);
 }
 
 .workspace-header h2 {
-  font-size: 16px;
-  margin-bottom: 12px;
-  color: #1f2937;
+  margin-bottom: 8px;
 }
 
 .workspace-box {
-  background-color: #f3f4f6;
-  border-radius: 8px;
-  padding: 12px;
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 14px;
+  gap: 10px;
+  background-color: #f1f5f9;
+  padding: 8px 12px;
+  border-radius: 8px;
 }
 
 .workspace-initial {
-  width: 24px;
-  height: 24px;
-  background-color: #10b981;
+  width: 32px;
+  height: 32px;
+  background-color: #2563eb;
   color: white;
-  font-size: 12px;
-  font-weight: bold;
-  border-radius: 4px;
+  border-radius: 50%;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
+  font-weight: bold;
 }
 
 .create-link-wrapper {
-  margin-top: 20px;
+  margin-top: 24px;
 }
 
 .create-link {
-  display: inline-block;
+  color: #2563eb;
   text-decoration: none;
-  background-color: #f9fafb;
-  border: 1px dashed #d1d5db;
-  color: #374151;
-  padding: 12px 16px;
-  border-radius: 6px;
   font-weight: 500;
-  font-size: 14px;
 }
 
+.create-link:hover {
+  text-decoration: underline;
+}
+
+/* Content */
 .dashboard-content {
   flex: 1;
-  padding: 32px;
+  padding: 24px;
 }
 
 .content-header h1 {
   margin: 0;
-  font-size: 28px;
-  color: #1f2937;
 }
 
 .content-header p {
-  font-size: 14px;
-  color: #6b7280;
+  margin-top: 4px;
+  color: #475569;
+}
+
+/* Tables Section */
+.tables-section {
+  margin-top: 28px;
 }
 
 .section-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin: 24px 0;
 }
 
 .btn-primary {
-  background-color: #2d7ff9;
+  padding: 6px 14px;
+  background-color: #2563eb;
   color: white;
+  border-radius: 999px;
   text-decoration: none;
-  padding: 10px 20px;
-  border-radius: 6px;
   font-size: 14px;
-  font-weight: 500;
   border: none;
   cursor: pointer;
 }
 
-.empty-state {
-  background-color: white;
-  padding: 60px 20px;
-  text-align: center;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
+.btn-primary:hover {
+  background-color: #1e50c3;
 }
 
-.empty-icon {
-  font-size: 32px;
-  margin-bottom: 16px;
-}
-
+/* Cards */
 .tables-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  margin-top: 18px;
+  display: flex;
   gap: 20px;
+  flex-wrap: wrap;
 }
 
 .table-card {
   background-color: white;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  position: relative;
-  overflow: hidden;
-}
-
-.table-card-header {
-  height: 80px;
-  background: linear-gradient(135deg, #60a5fa, #3b82f6);
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  width: 280px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .table-card-actions {
-  position: absolute;
-  top: 12px;
-  right: 12px;
   display: flex;
   gap: 8px;
 }
 
-.btn-tiny {
-  background-color: white;
-  color: #374151;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
-  border: none;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.btn-tiny-red {
-  background-color: #ef4444;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
-  border: none;
-  cursor: pointer;
-}
-
 .table-card-body {
-  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
 }
 
 .table-card-title {
   display: flex;
   align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
+  gap: 8px;
 }
 
 .table-icon {
-  width: 32px;
-  height: 32px;
-  background-color: #f3f4f6;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border-radius: 6px;
-  font-size: 16px;
-}
-
-.table-card-body p {
-  font-size: 14px;
-  color: #6b7280;
-  margin-bottom: 16px;
+  font-size: 18px;
 }
 
 .table-meta {
+  margin-top: 4px;
+  font-size: 0.75rem;
+  color: #475569;
   display: flex;
-  justify-content: space-between;
-  font-size: 12px;
-  color: #9ca3af;
+  flex-direction: column;
+  gap: 2px;
+}
+
+/* Empty State */
+.empty-state {
+  background-color: #fff;
+  padding: 28px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
 }
 
 .dashboard-loading {
-  padding: 20px;
+  padding: 40px;
   text-align: center;
+  font-weight: 500;
 }
