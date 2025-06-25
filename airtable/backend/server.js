@@ -11,12 +11,12 @@ const app = express();
 const port = process.env.PORT || 5000;
 const secret = process.env.JWT_SECRET || "twinsriram07";
 
-// ✅ Middlewares
+
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 app.use(express.json());
-app.use("/uploads", express.static(path.join(__dirname, "uploads"))); // Serve uploaded files
+app.use("/uploads", express.static(path.join(__dirname, "uploads"))); 
 
-// ✅ File storage config
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, "uploads/");
@@ -28,7 +28,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// ✅ Auth middleware
+
 const auth = (req, res, next) => {
   const token = req.headers.authorization?.split(" ")[1];
   if (!token) return res.sendStatus(401);
@@ -40,7 +40,7 @@ const auth = (req, res, next) => {
   });
 };
 
-// ✅ Auth routes
+
 app.post("/api/register", async (req, res) => {
   const { name, email, password } = req.body;
 
@@ -68,7 +68,7 @@ app.post("/api/login", (req, res) => {
   });
 });
 
-// ✅ Tables
+
 app.get("/api/tables", auth, (req, res) => {
   db.query("SELECT * FROM tables WHERE user_id = ? ORDER BY created_at DESC", [req.user.id], (err, rows) => {
     res.json(rows);
@@ -104,7 +104,6 @@ app.delete("/api/tables/:id", auth, (req, res) => {
   });
 });
 
-// ✅ Records APIs with file support
 app.get("/api/tables/:id/records", auth, (req, res) => {
   db.query("SELECT * FROM records WHERE table_id = ?", [req.params.id], (err, rows) => {
     const records = rows.map((r) => ({
@@ -184,7 +183,6 @@ app.delete("/api/records/:id", auth, (req, res) => {
   });
 });
 
-// ✅ Start server
 app.listen(port, () => {
   console.log(`🚀 Server running at http://localhost:${port}`);
 });

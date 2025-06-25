@@ -99,7 +99,7 @@ const CreateTable = ({ user, onLogout }) => {
       </header>
 
       <form className="create-form" onSubmit={handleSubmit}>
-        {/* Table Name */}
+        
         <div className="input-group">
           <label>Table Name<span style={{ color: 'red' }}>*</span></label>
           <input
@@ -110,7 +110,7 @@ const CreateTable = ({ user, onLogout }) => {
           />
         </div>
 
-        {/* Description */}
+        
         <div className="input-group">
           <label>Description</label>
           <textarea
@@ -120,7 +120,7 @@ const CreateTable = ({ user, onLogout }) => {
           />
         </div>
 
-        {/* Fields */}
+        
         {fields.map(f => (
           <div key={f.id} className="field-block">
             <div className="field-row">
@@ -185,7 +185,7 @@ const CreateTable = ({ user, onLogout }) => {
           </div>
         ))}
 
-        {/* Button Row */}
+        
         <div className="button-row">
           <button
             type="button"
